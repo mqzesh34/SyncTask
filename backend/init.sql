@@ -22,3 +22,23 @@ CREATE TABLE team_memberships (
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, team_id)
 );
+
+CREATE TYPE task_status AS ENUM (
+    'TODO', 
+    'IN_PROGRESS', 
+    'ON_HOLD', 
+    'REVISED', 
+    'DONE'
+);
+
+CREATE TABLE tasks (
+    task_id SERIAL PRIMARY KEY,
+    task_name VARCHAR(255) NOT NULL,
+    task_details TEXT,
+    team_id INTEGER NOT NULL REFERENCES teams(team_id) ON DELETE CASCADE,
+    creator_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT,
+    assignee_id INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+    task_status task_status NOT NULL DEFAULT 'TODO',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

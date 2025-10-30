@@ -9,6 +9,7 @@ app.use(cookieParser());
 app.use("/api/auth", require("./routes/authRoute"));
 app.use("/api/users", require("./routes/userRoute"));
 app.use("/api/teams", require("./routes/teamRoute"));
+app.use("/api/teams", require("./routes/taskRoute"));
 
 app.use((err, req, res, next) => {
   console.error("Bir hata oluştu:", err.stack);
