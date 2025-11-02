@@ -27,10 +27,66 @@ exports.createTask = async (teamId, taskData) => {
   return newTask;
 };
 
-exports.getTasks = async (teamId) => {
+exports.getTasks = async (teamId, userId) => {
+  const membership = await teamMembershipRepository.findMembershipByUserAndTeam(
+    userId,
+    teamId
+  );
+  if (!membership) {
+    throw new Error(
+      "Bu ekibin üyesi olmadığınız için görevleri görüntüleyemezsiniz."
+    );
+  }
+
   const { rows } = await db.query(
     "SELECT * FROM tasks WHERE team_id = $1 ORDER BY created_at DESC;",
     [teamId]
   );
-  return rows[0];
+  return rows;
+};
+
+exports.deleteTask = async (teamId, taskId, userId) => {
+  const membership = await teamMembershipRepository.findMembershipByUserAndTeam(
+    userId,
+    teamId
+  );
+  if (!membership || membership.role !== "LEADER") {
+    throw new Error("Bu görevi silme yetkiniz (LEADER rolü) bulunmamaktadır.");
+  }
+
+  const task = await taskRepository.findTaskById(taskId);
+  if (!task || task.team_id !== parseInt(teamId)) {
+    throw new Error("Görev bulunamadı veya bu ekibe ait değil.");
+  }
+
+  await taskRepository.deleteTask(taskId);
+};
+
+exports.updateTask = async (teamId, taskId, userId, updateData) => {
+  const membership = await teamMembershipRepository.findMembershipByUserAndTeam(
+    userId,
+    teamId
+  );
+  if (!membership) {
+    throw new Error(
+      "Bu ekibe üye olmadığınız için görevleri güncelleyemezsiniz."
+    );
+  }
+
+  const task = await taskRepository.findTaskById(taskId);
+  if (!task || task.team_id !== parseInt(teamId)) {
+    throw new Error("Görev bulunamadı veya bu ekibe ait değil.");
+  }
+
+  const isLeader = membership.role === "LEADER";
+  const isAssignee = task.assignee_id === userId;
+
+  if (!isLeader && !isAssignee) {
+    throw new Error(
+      "Bu görevi güncelleme yetkiniz yok. Yalnızca Liderler veya atanmış kişiler güncelleyebilir."
+    );
+  }
+
+  const updatedTask = await taskRepository.updateTask(taskId, updateData);
+  return updatedTask;
 };
