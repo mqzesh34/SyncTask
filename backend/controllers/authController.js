@@ -2,8 +2,8 @@ const authService = require("../services/authService");
 
 exports.register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    await authService.registerUser(email, password);
+    const { email, password, first_name, last_name } = req.body;
+    await authService.registerUser(email, password, first_name, last_name);
     res.status(201).json({
       status: "success",
       message: "Kayıt başarılı",
@@ -33,13 +33,7 @@ exports.login = async (req, res, next) => {
 
 exports.logout = async (req, res, next) => {
   try {
-    res.cookie("access_token", "", {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 10 * 1000),
-      maxAge: 0,
-    });
-
+    res.clearCookie("access_token");
     res.status(201).json({ status: "success", message: "Oturum kapatıldı" });
   } catch (error) {
     next(error);

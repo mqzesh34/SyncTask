@@ -2,7 +2,7 @@ const userRepository = require("../repositories/userRepository");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-exports.registerUser = async (email, password) => {
+exports.registerUser = async (email, password, first_name, last_name) => {
   const existingUser = await userRepository.findUserByEmail(email);
   if (existingUser) {
     throw new Error("Bu email zaten kayıtlı.");
@@ -10,10 +10,12 @@ exports.registerUser = async (email, password) => {
 
   const password_hash = await bcrypt.hash(password, 10);
 
-  const newUser = await userRepository.createUser({
+  const newUser = await userRepository.createUser(
     email,
     password_hash,
-  });
+    first_name,
+    last_name
+  );
 
   return newUser;
 };
