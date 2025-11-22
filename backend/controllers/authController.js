@@ -17,14 +17,20 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
     const token = await authService.loginUser(email, password);
-    res.cookie("access_token", token, {
+
+    const cookieOptions = {
       httpOnly: true,
       secure: false,
-      maxAge: 1000 * 60 * 60 * 24,
       sameSite: "strict",
-    });
+    };
+
+    if (rememberMe) {
+      cookieOptions.maxAge = 1000 * 60 * 60 * 24 * 30;
+    }
+
+    res.cookie("access_token", token, cookieOptions);
     res.status(201).json({ status: "success", message: "Giriş başarılı" });
   } catch (error) {
     next(error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { type UserCredentials } from "../types.d";
@@ -197,6 +197,27 @@ const LoginPage: React.FC = () => {
                     className="pl-10 p-3 w-full rounded-lg border border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-sm hover:border-gray-400"
                     placeholder="••••••••"
                   />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="rememberMe"
+                    type="checkbox"
+                    checked={formData.rememberMe || false}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rememberMe: e.target.checked })
+                    }
+                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded cursor-pointer"
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-900 dark:text-gray-300 cursor-pointer select-none"
+                  >
+                    Beni hatırla
+                  </label>
                 </div>
               </div>
 

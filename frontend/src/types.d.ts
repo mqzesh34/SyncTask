@@ -3,6 +3,7 @@ export interface UserCredentials {
     password: string;
     first_name: string;
     last_name: string;
+    rememberMe?: boolean;
 }
 
 export interface User {
